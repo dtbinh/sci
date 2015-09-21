@@ -36,7 +36,8 @@ if __name__ == '__main__':
 
     # args
     args = parse_arguments()
-    env = tuple(args.environment)
+    env = tuple(args.environment)[::-1]
+    print(env)
     balls = args.balls
     size = args.size
     debug = logging.DEBUG if args.debug else logging.INFO
@@ -47,8 +48,8 @@ if __name__ == '__main__':
     sma = sma.SMA(env)
     environment = sma.environment
     for i in range(balls):
-        x = random.randint(0, env[0]-1)
-        y = random.randint(0, env[1]-1)
+        x = random.randint(0, env[1]-1)
+        y = random.randint(0, env[0]-1)
         step = (random.randint(-1, 1), random.randint(-1, 1))
         a = agent.Agent(environment, x, y, step, size)
         sma.addAgent(a)

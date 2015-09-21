@@ -17,7 +17,7 @@ class Environment(object):
 
     def addAgent(self, agent, x, y):
         delta = agent.size
-        n, m = self.matrix.shape
+        m, n = self.matrix.shape
         if x+delta >= n or x <= 0 or y+delta >= m or y <= 0:
             new_x = x + (random.randint(-1, 1) * delta)
             new_y = y + (random.randint(-1, 1) * delta)
@@ -35,7 +35,7 @@ class Environment(object):
 
     def moveAgentOn(self, agent, x, y):
         delta = agent.size
-        n, m = self.matrix.shape
+        m, n = self.matrix.shape
         if x+delta >= n or x <= 0 or y+delta >= m or y <= 0:
             move = False
             agent.wall(x, y)

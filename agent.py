@@ -36,7 +36,7 @@ class Agent(object):
         if step_x == 0 or step_y == 0:
             step_x, step_y = -step_x, -step_y
         else:
-            n, m = self.environment.matrix.shape
+            m, n = self.environment.matrix.shape
             delta = self.size
             if x+delta >= n or x <= 0:
                 step_x = -step_x
