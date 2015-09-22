@@ -2,8 +2,8 @@ import logging
 
 import random
 
-import environment
-import agent
+from environment import environment
+from agents import agent
 
 logger = logging.getLogger()
 

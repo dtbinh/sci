@@ -9,23 +9,18 @@ logger = logging.getLogger()
 
 class UI(object):
 
-    def __init__(self, sma):
+    def __init__(self, sma, delta=1, speed=25):
         self.sma = sma
+        self.delta = delta
+        self.speed = speed
         self.windows = Tk()
         self.windows.title("Life of balls")
-        self.canvas = Canvas(self.windows, width=sma.environment.shape()[1], height=sma.environment.shape()[0], background='white')
+        self.canvas = Canvas(self.windows, width=sma.environment.shape()[1]*delta, height=sma.environment.shape()[0]*delta, background='white')
         self.rectangle = dict()
 
         for agent in sma.agents:
-            r = random.randint(0, 2)
-            delta = agent.size
-            if r == 0:
-                color = "red"
-            elif r == 1:
-                color = "blue"
-            else:
-                color = "green"
-            rect = self.canvas.create_oval(agent.x, agent.y, agent.x+delta, agent.y+delta, fill=color, outline=color)
+            color = agent.fillcolor
+            rect = self.canvas.create_rectangle(agent.x*delta, agent.y*delta, (agent.x*delta) + delta, (agent.y*delta) + delta, fill=color, outline=color)
             self.rectangle[agent] = rect
 
         self.canvas.pack()
@@ -36,15 +31,13 @@ class UI(object):
         self.windows.mainloop()
 
     def live(self):
-        n = 0
+        delta = self.delta
         while (True):
             random.shuffle(self.sma.agents)
             for agent in self.sma.agents:
-                delta = agent.size
                 move = agent.decide()
-                rect = self.rectangle[agent]
                 if move:
+                    rect = self.rectangle[agent]
                     self.canvas.move(rect, agent.step[0] * delta, agent.step[1] * delta)
-            n += 1
             self.canvas.update()
-            self.windows.after(50)
+            self.windows.after(self.speed)

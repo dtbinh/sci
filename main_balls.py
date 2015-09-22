@@ -4,15 +4,16 @@ import logging
 
 import random
 
-import sma
-import agent
-import ui
+from simulation import sma
+from agents.balls import ball
+from ui import gui
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--environment', '-env', help="Size of the environment", type=int, nargs=2, required=True)
     parser.add_argument('--balls', '-b', help="Number of balls", type=int, required=True)
-    parser.add_argument('--size', '-s', help="Size of the balls", type=int)
+    parser.add_argument('--size', '-s', help="Size of the balls", type=int, default=1)
+    parser.add_argument('--speed', help="Fix the speed in ms", type=int, default=25)
     parser.add_argument('--debug', '-d', help="Activate the debug mode", action='store_true')
 
     args = parser.parse_args()
@@ -36,23 +37,23 @@ if __name__ == '__main__':
 
     # args
     args = parse_arguments()
-    env = tuple(args.environment)[::-1]
-    print(env)
+    env = tuple(args.environment)
     balls = args.balls
     size = args.size
+    speed = args.speed
     debug = logging.DEBUG if args.debug else logging.INFO
 
     # logger
     logger = setUpLogging(debug)
 
-    sma = sma.SMA(env)
+    sma = sma.SMA(env[::-1])
     environment = sma.environment
     for i in range(balls):
-        x = random.randint(0, env[1]-1)
-        y = random.randint(0, env[0]-1)
+        x = random.randint(0, env[0]-1)
+        y = random.randint(0, env[1]-1)
         step = (random.randint(-1, 1), random.randint(-1, 1))
-        a = agent.Agent(environment, x, y, step, size)
+        a = ball.Ball(environment, x, y, step)
         sma.addAgent(a)
 
-    ui = ui.UI(sma)
+    ui = gui.UI(sma, size, speed)
     ui.run()
