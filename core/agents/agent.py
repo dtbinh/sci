@@ -18,6 +18,7 @@ class Agent(object):
         self.x = x
         self.y = y
         self.direction = direction # step(x,y) i.e. step(1,0) -> move to the right
+        self.shape = None
 
     def decide(self):
         """
@@ -53,3 +54,4 @@ class Agent(object):
         """
         self.x = x
         self.y = y
+        return []

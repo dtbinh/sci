@@ -4,10 +4,10 @@ import logging
 
 import random
 
-from simulation import sma
-from agents.wator import fish
-from agents.wator import shark
-from ui import gui
+from wator.simulation import sma
+from wator.agents import fish
+from wator.agents import shark
+from wator.ui import gui
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -62,14 +62,14 @@ if __name__ == '__main__':
         y = random.randint(0, env[1]-1)
         step = (random.randint(-1, 1), random.randint(-1, 1))
         f = fish.Fish(environment, x, y, step, fish_rep)
-        sma.addAgent(f)
+        sma.addFish(f)
         
     for i in range(sharks):
         x = random.randint(0, env[0]-1)
         y = random.randint(0, env[1]-1)
         step = (random.randint(-1, 1), random.randint(-1, 1))
         s = shark.Shark(environment, x, y, step, shark_rep, shark_sta)
-        sma.addAgent(s)
+        sma.addShark(s)
 
-    ui = gui.UI(sma, size, speed, lines)
+    ui = gui.UI("Wator", sma, size, speed, lines)
     ui.run()

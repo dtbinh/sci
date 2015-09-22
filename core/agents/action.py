@@ -9,5 +9,5 @@ class Action(object):
     def __init__(self, agent):
         self.agent = agent
         
-    def execute(self, sma, canvas, shapes, delta):
+    def execute(self, sma, canvas, delta):
         pass

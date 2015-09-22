@@ -15,17 +15,20 @@ class Environment(object):
 
     def addAgent(self, agent, x, y):
         n, m = self.matrix.shape
-        if x >= m or x < 0 or y >= n or y < 0:
-            new_x = random.randint(0, m-1)
-            new_y = random.randint(0, n-1)
-            self.addAgent(agent, new_x, new_y)
-        elif self.hasAgentOn(x, y):
-            new_x = random.randint(0, m-1)
-            new_y = random.randint(0, n-1)
-            self.addAgent(agent, new_x, new_y)
-        else: # free spot
-            self.matrix[y,x] = agent
-            agent.moveOn(x,y)
+        placed = False
+        new_x = x
+        new_y = y
+        while not placed:
+            if new_x >= m or new_x < 0 or new_y >= n or new_y < 0:
+                new_x = random.randint(0, m-1)
+                new_y = random.randint(0, n-1)
+            elif self.hasAgentOn(new_x, new_y):
+                new_x = random.randint(0, m-1)
+                new_y = random.randint(0, n-1)
+            else: # free spot
+                placed = True
+                self.matrix[new_y,new_x] = agent
+                agent.moveOn(new_x,new_y)
         
     def removeAgent(self, agent, x, y):
         self.matrix[y, x] = None
@@ -35,6 +38,7 @@ class Environment(object):
         return present
 
     def moveAgentOn(self, agent, x, y):
+        action = []
         n, m = self.matrix.shape
         if x >= m or x < 0 or y >= n or y < 0: # wall
             action = agent.wall(x, y)
@@ -47,7 +51,7 @@ class Environment(object):
         else: # other agent
             other = self.matrix[y,x]
             action = agent.meet(other, x, y)
-
+        
         return action
 
     def shape(self):

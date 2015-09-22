@@ -8,6 +8,7 @@ class SMA(object):
 
     def __init__(self, shape):
         self.environment = environment.Environment(shape, self)
+        self.agents = []
 
     def addAgent(self, agent):
         self.environment.addAgent(agent, agent.x, agent.y)

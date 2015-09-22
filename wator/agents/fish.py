@@ -7,8 +7,8 @@ import logging
 
 import random
 
-from core.agents import agent
 import wator.agents.actions as actions
+from core.agents import agent
 
 logger = logging.getLogger()
 
@@ -22,40 +22,38 @@ class Fish(agent.Agent):
         self.vision = vision
         
     def decide(self):
-        actions = []
+        acts = []
         n,m = self.environment.shape()
         if self.timer == self.reproduction: # new born
             x = random.randint(0, m-1)
             y = random.randint(0, n-1)
             step = (random.randint(-1, 1), random.randint(-1, 1))
             fish = Fish(self.environment, x, y, step, self.reproduction)
-            actions.append(actions.Born(fish))
+            acts.append(actions.Born(fish))
             self.timer = 0
         else:
             self.timer += 1
         
-        choices = []
-        for i in range(-1, 2, 1):
-            for j in range(-1, 2, 1):
-                dir_x = (self.x + i) % m
-                dir_y = (self.y + j) % n
-                if not self.environment.hasAgentOn(dir_x, dir_y):
-                    choices.append((i, j))
+        x = random.randint(-1, 1)
+        y = random.randint(-1, 1)
         
-        try:
-            x,y = random.choice(choices)
-        except IndexError:
-            pass
-        
-        actions.append(actions.Move(self, x, y))
+        acts.append(actions.Move(self, x, y))
             
-        return actions
+        return acts
         
     def wall(self, x, y):
-        return False
+        self.step = (0,0)
+        return []
     
     def meet(self, agent, x, y):
-        return False
+        self.step = (0,0)
+        return []
+    
+    def addToSMA(self, sma):
+        sma.addFish(self)
+        
+    def removeFromSMA(self, sma):
+        sma.removeFish(self)
     
     def canBeEaten(self):
         return True

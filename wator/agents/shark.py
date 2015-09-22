@@ -7,60 +7,62 @@ import logging
 
 import random
 
-from agents import agent
-from agents.agent import MOVE
+import wator.agents.actions as actions
+from core.agents import agent
 
 logger = logging.getLogger()
 
-BORN = 'born'
-DIE = 'die'
-
 class Shark(agent.Agent):
     
-    def __init__(self, env, x, y, step, starving, vision=1):
+    def __init__(self, env, x, y, step, reproduction, starving, vision=1):
         agent.Agent.__init__(self, env, x, y, step)
+        self.reproduction = reproduction
         self.starving = starving
-        self.timer = 0
+        self.timerdeath = 0
+        self.timerbaby = 0
         self.color = 'black'
         self.vision = vision
         
     def decide(self):
-        actions = []
+        acts = []
         n,m = self.environment.shape()
-        if self.timer == self.starving:
-            sma = self.environment.sma.removeAgent(self)
-            actions.append((DIE, self))
-            return actions
+        if self.timerdeath == self.starving:
+            acts.append(actions.Die(self))
+            return acts
+        elif self.timerbaby == self.reproduction: # new born
+            x = random.randint(0, m-1)
+            y = random.randint(0, n-1)
+            step = (random.randint(-1, 1), random.randint(-1, 1))
+            fish = Shark(self.environment, x, y, step, self.reproduction, self.starving)
+            acts.append(actions.Born(fish))
+            self.timerdeath += 1
+            self.timerbaby = 0
         else:
-            self.timer += 1
+            self.timerdeath += 1
+            self.timerbaby += 1
+
+        x = random.randint(-1, 1)
+        y = random.randint(-1, 1)
         
-        choices = []
-        for i in range(-1, 2, 1):
-            for j in range(-1, 2, 1):
-                dir_x = (self.x + i) % m
-                dir_y = (self.y + j) % n
-                if not self.environment.hasAgentOn(dir_x, dir_y):
-                    choices.append((dir_x, dir_y))
-        
-        try:
-            x,y = random.choice(choices)
-        except IndexError:
-            return actions
-        
-        if self.environment.moveAgentOn(self, x, y):
-            actions.append((MOVE, self))
+        acts.append(actions.Move(self, x, y))
             
-        return actions
+        return acts
         
     def wall(self, x, y):
-        pass
+        self.step = (0,0)
+        return []
     
     def meet(self, agent, x, y):
         if agent.canBeEaten():
-            sma = self.environment.sma.removeAgent(self)
-            sma.kill(agent)
-            return True
-        return False
+            self.timerdeath = 0
+            return [actions.Kill(agent)]
+        return []
+    
+    def addToSMA(self, sma):
+        sma.addShark(self)
+        
+    def removeFromSMA(self, sma):
+        sma.removeShark(self)
     
     def canBeEaten(self):
         return False

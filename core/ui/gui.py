@@ -14,10 +14,9 @@ class UI(object):
         self.speed = speed
         self.windows = Tk()
         self.windows.title(title)
-        width = sma.environment.shape()[1]*delta
-        height = sma.environment.shape()[0]*delta
+        width = sma.environment.shape()[1] * delta
+        height = sma.environment.shape()[0] * delta
         self.canvas = Canvas(self.windows, width=width, height=height, background='white')
-        self.shapes = dict()
 
         self.canvas.pack()
         self.button = Button(self.windows, text="Live ON!", command=self.live)
@@ -25,8 +24,8 @@ class UI(object):
         
         for agent in sma.agents:
             color = agent.color
-            rect = self.canvas.create_rectangle(agent.x * delta, agent.y * delta, (agent.x * delta) + delta, (agent.y * delta) + delta, fill=color, outline=color)
-            self.shapes[agent] = rect
+            shape = self.canvas.create_rectangle(agent.x * delta, agent.y * delta, (agent.x * delta) + delta, (agent.y * delta) + delta, fill=color, outline=color)
+            agent.shape = shape
         
         if lines and delta > 2:
             self.build_lines()
@@ -53,7 +52,9 @@ class UI(object):
                 actions = agent.decide()
                 
                 for action in actions:
-                    action.execute(self.sma, self.canvas, self.shapes, self.delta)
+                    suppactions = action.execute(self.sma, self.canvas, self.delta)
+                    for suppaction in suppactions:
+                        suppaction.execute(self.sma, self.canvas, self.delta)
             
             self.canvas.update()
             self.windows.after(self.speed)

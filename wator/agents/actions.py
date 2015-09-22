@@ -16,40 +16,42 @@ class Move(action.Action):
         self.x = x
         self.y = y
         
-    def execute(self, sma, canvas, shapes, delta):
-        sma.environment.moveAgentOn(self.agent, self.agent.x + self.x, self.agent.y + self.y)
-        shape = shapes[self.agent]
+    def execute(self, sma, canvas, delta):
+        acts = sma.environment.moveAgentOn(self.agent, self.agent.x + self.x, self.agent.y + self.y)
+        shape = self.agent.shape
         canvas.move(shape, self.x * delta, self.y * delta)
+        return acts
         
 class Born(action.Action):
 
-    def __init__(self):
-        action.Action.__init__(self)
+    def __init__(self, agent):
+        action.Action.__init__(self, agent)
         
-    def execute(self, sma, agent, canvas, shapes, delta):
-        color = agent.color
-        shape = canvas.create_rectangle(agent.x * delta, agent.y * delta, (agent.x * delta) + delta, (agent.y * delta) + delta, fill=color, outline=color)
-        self.shapes[agent] = shape
-        agent.addToSMA(sma)
+    def execute(self, sma, canvas, delta):
+        self.agent.addToSMA(sma)
+        color = self.agent.color
+        shape = canvas.create_rectangle(self.agent.x * delta, self.agent.y * delta, (self.agent.x * delta) + delta, (self.agent.y * delta) + delta, fill=color, outline=color)
+        self.agent.shape = shape
+        return []
         
 class Die(action.Action):
 
-    def __init__(self):
-        action.Action.__init__(self)
+    def __init__(self, agent):
+        action.Action.__init__(self, agent)
         
-    def execute(self, sma, agent, canvas, shapes, delta):
-        shape = shapes[agent]
-        self.canvas.delete(shape)
-        del self.shapes[agent]
-        agent.removeFromSMA(sma)
+    def execute(self, sma, canvas, delta):
+        self.agent.removeFromSMA(sma)
+        shape = self.agent.shape
+        canvas.delete(shape)
+        return []
         
 class Kill(action.Action):
 
-    def __init__(self):
-        action.Action.__init__(self)
+    def __init__(self, agent):
+        action.Action.__init__(self, agent)
         
-    def execute(self, sma, agent, canvas, shapes, delta):
-        shape = shapes[agent]
-        self.canvas.delete(shape)
-        del self.shapes[agent]
-        agent.removeFromSMA(sma)
+    def execute(self, sma, canvas, delta):
+        self.agent.removeFromSMA(sma)
+        shape = self.agent.shape
+        canvas.delete(shape)
+        return []
