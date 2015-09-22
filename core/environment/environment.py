@@ -3,14 +3,15 @@ import logging
 import numpy as np
 import random
 
-from agents import agent
+from core.agents import agent
 
 logger = logging.getLogger()
 
 class Environment(object):
 
-    def __init__(self, shape):
+    def __init__(self, shape, sma):
         self.matrix = np.empty(shape, dtype=agent.Agent)
+        self.sma = sma
 
     def addAgent(self, agent, x, y):
         n, m = self.matrix.shape
@@ -25,6 +26,9 @@ class Environment(object):
         else: # free spot
             self.matrix[y,x] = agent
             agent.moveOn(x,y)
+        
+    def removeAgent(self, agent, x, y):
+        self.matrix[y, x] = None
 
     def hasAgentOn(self, x, y):
         present = True if self.matrix[y,x] else False
@@ -32,22 +36,19 @@ class Environment(object):
 
     def moveAgentOn(self, agent, x, y):
         n, m = self.matrix.shape
-        if x >= m or x < 0 or y >= n or y < 0:
-            move = False
-            agent.wall(x, y)
-        elif not self.hasAgentOn(x, y):
-            move = True
+        if x >= m or x < 0 or y >= n or y < 0: # wall
+            action = agent.wall(x, y)
+        elif not self.hasAgentOn(x, y): # free spot
             prev_x = agent.x
             prev_y = agent.y
             self.matrix[y,x] = agent
             self.matrix[prev_y, prev_x] = None
-            agent.moveOn(x,y)
+            action = agent.moveOn(x,y)
         else: # other agent
-            move = False
             other = self.matrix[y,x]
-            agent.meet(other, x, y)
+            action = agent.meet(other, x, y)
 
-        return move
+        return action
 
     def shape(self):
         return self.matrix.shape

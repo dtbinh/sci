@@ -49,3 +49,8 @@ class Ball(agent.Agent):
         
     def meet(self, agent, x, y):
         self.reverse()
+        
+    def reverse(self):
+        x = self.step[0]
+        y = self.step[1]
+        self.step = (-x, -y)
