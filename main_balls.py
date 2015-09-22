@@ -15,8 +15,10 @@ def parse_arguments():
     parser.add_argument('--size', '-s', help="Size of the balls", type=int, default=1)
     parser.add_argument('--speed', help="Fix the speed in ms", type=int, default=25)
     parser.add_argument('--debug', '-d', help="Activate the debug mode", action='store_true')
+    parser.add_argument('--lines', '-l', help="Display a grid", choices=['true', 'false'], default='true')
 
     args = parser.parse_args()
+    args.lines = True if args.lines == 'true' else False
 
     return args
 
@@ -41,6 +43,7 @@ if __name__ == '__main__':
     balls = args.balls
     size = args.size
     speed = args.speed
+    lines = args.lines
     debug = logging.DEBUG if args.debug else logging.INFO
 
     # logger
@@ -55,5 +58,5 @@ if __name__ == '__main__':
         a = ball.Ball(environment, x, y, step)
         sma.addAgent(a)
 
-    ui = gui.UI(sma, size, speed)
+    ui = gui.UI(sma, size, speed, lines)
     ui.run()
