@@ -14,8 +14,8 @@ class UI(object):
         self.speed = speed
         self.windows = Tk()
         self.windows.title(title)
-        width = sma.environment.shape()[1] * delta
-        height = sma.environment.shape()[0] * delta
+        width = (sma.environment.shape()[1] * delta) + 100
+        height = (sma.environment.shape()[0] * delta) + 100
         self.canvas = Canvas(self.windows, width=width, height=height, background='white')
 
         self.canvas.pack()

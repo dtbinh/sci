@@ -23,19 +23,25 @@ class Fish(agent.Agent):
         
     def decide(self):
         acts = []
-        n,m = self.environment.shape()
+        neigh = self.neighbours()
+        
         if self.timer == self.reproduction: # new born
-            x = random.randint(0, m-1)
-            y = random.randint(0, n-1)
-            step = (random.randint(-1, 1), random.randint(-1, 1))
-            fish = Fish(self.environment, x, y, step, self.reproduction)
-            acts.append(actions.Born(fish))
-            self.timer = 0
+            if len(neigh) != 8:
+                x = self.x
+                y = self.y
+                step = (random.randint(-1, 1), random.randint(-1, 1))
+                shark = Fish(self.environment, x, y, step, self.reproduction)
+                acts.append(actions.Born(shark))
+                self.timer = 0
         else:
             self.timer += 1
         
-        x = random.randint(-1, 1)
-        y = random.randint(-1, 1)
+        x = 0
+        y = 0
+        if len(self.neighbours()) != 8:
+            while x == 0 and y == 0:
+                x = random.randint(-1, 1)
+                y = random.randint(-1, 1)
         
         acts.append(actions.Move(self, x, y))
             
@@ -43,7 +49,7 @@ class Fish(agent.Agent):
         
     def wall(self, x, y):
         self.step = (0,0)
-        return []
+        return -1
     
     def meet(self, agent, x, y):
         self.step = (0,0)

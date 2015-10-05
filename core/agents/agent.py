@@ -2,8 +2,6 @@ import logging
 
 logger = logging.getLogger()
 
-MOVE = 'move'
-
 class Agent(object):
     """
     Represent an individual agent in the simulation
@@ -38,6 +36,16 @@ class Agent(object):
         What append if the agent hit another agent
         """
         pass
+    
+    def neighbours(self):
+        neigh = []
+        for x in range(-1, 2, 1):
+            for y in range(-1, 2, 1):
+                
+                if self.environment.hasAgentOn(self.x + x, self.y + y) and not (x == 0 and y == 0):
+                    neigh.append(self.environment[self.x + x, self.y + y])
+        
+        return neigh
     
     def addToSMA(self, sma):
         sma.addAgent(self)

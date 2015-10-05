@@ -12,6 +12,10 @@ class Environment(object):
     def __init__(self, shape, sma):
         self.matrix = np.empty(shape, dtype=agent.Agent)
         self.sma = sma
+        
+    def __getitem__(self, key):
+        x,y = key
+        return self.matrix[y,x]
 
     def addAgent(self, agent, x, y):
         n, m = self.matrix.shape
@@ -19,7 +23,7 @@ class Environment(object):
         new_x = x
         new_y = y
         while not placed:
-            if new_x >= m or new_x < 0 or new_y >= n or new_y < 0:
+            if new_x > m or new_x < 0 or new_y > n or new_y < 0:
                 new_x = random.randint(0, m-1)
                 new_y = random.randint(0, n-1)
             elif self.hasAgentOn(new_x, new_y):

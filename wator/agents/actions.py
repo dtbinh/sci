@@ -19,7 +19,10 @@ class Move(action.Action):
     def execute(self, sma, canvas, delta):
         acts = sma.environment.moveAgentOn(self.agent, self.agent.x + self.x, self.agent.y + self.y)
         shape = self.agent.shape
-        canvas.move(shape, self.x * delta, self.y * delta)
+        if acts != -1:
+            canvas.move(shape, self.x * delta, self.y * delta)
+        else:
+            acts = []
         return acts
         
 class Born(action.Action):
