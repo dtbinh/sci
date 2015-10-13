@@ -12,28 +12,26 @@ class Environment(object):
     def __init__(self, shape, sma):
         self.matrix = np.empty(shape, dtype=agent.Agent)
         self.sma = sma
-        
+
     def __getitem__(self, key):
         x,y = key
         return self.matrix[y,x]
 
+    def firstFreeSpot(self):
+        n, m = self.shape()
+        for x in range(m):
+            for y in range(n):
+                if not self.hasAgentOn(x, y):
+                    return (x,y)
+        return (-1, -1)
+
     def addAgent(self, agent, x, y):
-        n, m = self.matrix.shape
-        placed = False
-        new_x = x
-        new_y = y
-        while not placed:
-            if new_x > m or new_x < 0 or new_y > n or new_y < 0:
-                new_x = random.randint(0, m-1)
-                new_y = random.randint(0, n-1)
-            elif self.hasAgentOn(new_x, new_y):
-                new_x = random.randint(0, m-1)
-                new_y = random.randint(0, n-1)
-            else: # free spot
-                placed = True
-                self.matrix[new_y,new_x] = agent
-                agent.moveOn(new_x,new_y)
-        
+        if not self.hasAgentOn(x, y):
+            self.matrix[y,x] = agent
+            agent.moveOn(x, y)
+            return True
+        return False
+
     def removeAgent(self, agent, x, y):
         self.matrix[y, x] = None
 
@@ -41,21 +39,19 @@ class Environment(object):
         present = True if self.matrix[y,x] else False
         return present
 
+    def neighboursOf(self, agent):
+        n,m = self.shape()
+        x = agent.x
+        y = agent.y
+        return self.matrix[max(y-1, 0):min(y+2, n), max(x-1, 0):min(x+2, m)]
+
     def moveAgentOn(self, agent, x, y):
-        action = []
-        n, m = self.matrix.shape
-        if x >= m or x < 0 or y >= n or y < 0: # wall
-            action = agent.wall(x, y)
-        elif not self.hasAgentOn(x, y): # free spot
-            prev_x = agent.x
-            prev_y = agent.y
-            self.matrix[y,x] = agent
-            self.matrix[prev_y, prev_x] = None
-            action = agent.moveOn(x,y)
-        else: # other agent
-            other = self.matrix[y,x]
-            action = agent.meet(other, x, y)
-        
+        prev_x = agent.x
+        prev_y = agent.y
+        self.matrix[y,x] = agent
+        self.matrix[prev_y, prev_x] = None
+        action = agent.moveOn(x,y)
+
         return action
 
     def shape(self):

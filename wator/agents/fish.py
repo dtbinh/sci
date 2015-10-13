@@ -5,6 +5,7 @@ Created on 22 sept. 2015
 '''
 import logging
 
+import numpy as np
 import random
 
 import wator.agents.actions as actions
@@ -14,52 +15,50 @@ logger = logging.getLogger()
 
 class Fish(agent.Agent):
 
-    def __init__(self, env, x, y, step, reproduction, vision=1):
+    def __init__(self, env, x, y, step, reproduction):
         agent.Agent.__init__(self, env, x, y, step)
         self.reproduction = reproduction
-        self.timer = 0
+        self.timerbaby = 0
         self.color = 'blue'
-        self.vision = vision
-        
+
     def decide(self):
         acts = []
         neigh = self.neighbours()
-        
-        if self.timer == self.reproduction: # new born
-            if len(neigh) != 8:
+        canMove = np.any(np.equal(neigh, None))
+
+        if canMove:
+            choices = np.where(np.equal(neigh, None))
+            xchoices = choices[1]
+            ychoices = choices[0]
+            choice = random.randint(0, len(xchoices)-1)
+            x = xchoices[choice] - 1
+            y = ychoices[choice] - 1
+            acts.append(actions.Move(self, x, y))
+
+            if self.timerbaby >= self.reproduction: # new born
                 x = self.x
                 y = self.y
                 step = (random.randint(-1, 1), random.randint(-1, 1))
-                shark = Fish(self.environment, x, y, step, self.reproduction)
-                acts.append(actions.Born(shark))
-                self.timer = 0
-        else:
-            self.timer += 1
-        
-        x = 0
-        y = 0
-        if len(self.neighbours()) != 8:
-            while x == 0 and y == 0:
-                x = random.randint(-1, 1)
-                y = random.randint(-1, 1)
-        
-        acts.append(actions.Move(self, x, y))
-            
+                fish = Fish(self.environment, x, y, step, self.reproduction)
+                acts.append(actions.Born(fish))
+                self.timerbaby = 0
+
+        self.timerbaby += 1
         return acts
-        
+
     def wall(self, x, y):
         self.step = (0,0)
         return -1
-    
+
     def meet(self, agent, x, y):
         self.step = (0,0)
         return []
-    
+
     def addToSMA(self, sma):
         sma.addFish(self)
-        
+
     def removeFromSMA(self, sma):
         sma.removeFish(self)
-    
+
     def canBeEaten(self):
         return True

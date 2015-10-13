@@ -11,7 +11,10 @@ class SMA(object):
         self.agents = []
 
     def addAgent(self, agent):
-        self.environment.addAgent(agent, agent.x, agent.y)
+        placed = self.environment.addAgent(agent, agent.x, agent.y)
+        if not placed:
+            x, y = self.environment.firstFreeSpot()
+            self.environment.addAgent(agent, x, y)
         self.agents.append(agent)
 
     def removeAgent(self, agent):

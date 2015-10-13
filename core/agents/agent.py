@@ -5,7 +5,7 @@ logger = logging.getLogger()
 class Agent(object):
     """
     Represent an individual agent in the simulation
-    
+
     It is associated to an environment.
     It has a position (x,y) on the environment.
     And it has a direction (x,y) x,y may be {-1, 0, 1}.
@@ -30,32 +30,25 @@ class Agent(object):
         What append if the agent hit a wall of the environment
         """
         pass
-    
+
     def meet(self, agent, x, y):
         """
         What append if the agent hit another agent
         """
         pass
-    
+
     def neighbours(self):
-        neigh = []
-        for x in range(-1, 2, 1):
-            for y in range(-1, 2, 1):
-                
-                if self.environment.hasAgentOn(self.x + x, self.y + y) and not (x == 0 and y == 0):
-                    neigh.append(self.environment[self.x + x, self.y + y])
-        
-        return neigh
-    
+        return self.environment.neighboursOf(self)
+
     def addToSMA(self, sma):
         sma.addAgent(self)
-        
+
     def removeFromSMA(self, sma):
         sma.removeAgent(self)
-    
+
     def position(self):
         return (self.x, self.y)
-    
+
     def moveOn(self, x, y):
         """
         Setter to change the position of the agent
